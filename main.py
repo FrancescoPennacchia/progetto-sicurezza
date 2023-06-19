@@ -21,7 +21,7 @@ class MySpider(CrawlSpider):
         download_link = response.css('.InstallButtonWrapper-download-link::attr(href)').get()
 
         if title and download_link:
-            file_name = '-'.join(title.split()) + '.xpi'  # Aggiungi trattini tra i diversi spazi
+            file_name = '_'.join(title.split()) + '.xpi'  # Aggiungi trattini tra i diversi spazi
             folder_path = 'test'  # Percorso della cartella di destinazione
             file_path = os.path.join(folder_path, file_name)  # Percorso completo del file di destinazione
 
