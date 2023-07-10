@@ -2,6 +2,7 @@ import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from urllib import request
+import unicodedata
 import os
 
 
@@ -15,6 +16,11 @@ class MySpider(CrawlSpider):
         Rule(LinkExtractor(restrict_css='.Paginate-item--next')),
     )
 
+    # Test normalization nomi con unicodedata
+    def normalize_filename(self, name):
+        # Rimuovi i caratteri non ASCII dal nome del file
+        normalized_name = ''.join(c for c in name if unicodedata.category(c) != 'Mn')
+        return normalized_name
 
     def parse_item(self, response):
         title = response.css('.AddonTitle::text').get()
@@ -22,6 +28,7 @@ class MySpider(CrawlSpider):
 
         if title and download_link:
             file_name = '_'.join(title.split()) + '.xpi'  # Aggiungi trattini tra i diversi spazi
+            file_name = self.normalize_filename(file_name)
             folder_path = 'test'  # Percorso della cartella di destinazione
             file_path = os.path.join(folder_path, file_name)  # Percorso completo del file di destinazione
 
@@ -31,4 +38,3 @@ class MySpider(CrawlSpider):
             self.log(f"File {file_name} scaricato correttamente nella cartella {folder_path}.")
 
         yield None
-
