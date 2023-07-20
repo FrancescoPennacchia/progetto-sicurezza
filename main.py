@@ -6,10 +6,18 @@ import unicodedata
 import os
 
 
+import scrapy
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
+from urllib import request
+import unicodedata
+import os
+
+
 class MySpider(CrawlSpider):
     name = 'Spider-sicurezza'
     allowed_domains = ['addons.mozilla.org']
-    start_urls = ['https://addons.mozilla.org/it/firefox/extensions/category/search-tools/']
+    start_urls = ['https://addons.mozilla.org/it/firefox/extensions/category/appearance/']
 
     rules = (
         Rule(LinkExtractor(restrict_css='.SearchResult-link'), callback='parse_item'),
@@ -20,6 +28,8 @@ class MySpider(CrawlSpider):
     def normalize_filename(self, name):
         # Rimuovi i caratteri non ASCII dal nome del file
         normalized_name = ''.join(c for c in name if unicodedata.category(c) != 'Mn')
+        # Sostituisci i caratteri non consentiti con _
+        normalized_name = normalized_name.replace("'", "_")
         return normalized_name
 
     def parse_item(self, response):
@@ -29,7 +39,7 @@ class MySpider(CrawlSpider):
         if title and download_link:
             file_name = '_'.join(title.split()) + '.xpi'  # Aggiungi trattini tra i diversi spazi
             file_name = self.normalize_filename(file_name)
-            folder_path = 'test'  # Percorso della cartella di destinazione
+            folder_path = 'aspetto'  # Percorso della cartella di destinazione
             file_path = os.path.join(folder_path, file_name)  # Percorso completo del file di destinazione
 
             os.makedirs(folder_path, exist_ok=True)  # Crea la cartella se non esiste
